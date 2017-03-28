@@ -1,0 +1,26 @@
+<h3>Developer costs</h3>
+
+{% if developers %}
+    <ul>
+    {% for developer in developers %}
+        <li>{{ developer.name }}</li>
+        <li> Hourly Rate - {{ developer.hourly_rate }}</li>
+        <li> Hourls Worked - {{ developer.hours_worked }}</li>
+        <li> Total Developer Cost </li>{% widthratio developer.hourly_rate 1 developer.hours_worked %}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No billables are available.</p>
+{% endif %}
+
+<h3>Billable costs</h3>
+
+{% if billables %}
+    <ul>
+    {% for billable in billables %}
+        <li>{{ billable.name }} - {{ billable.cost }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No billables are available.</p>
+{% endif %}

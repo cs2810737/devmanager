@@ -1,0 +1,15 @@
+<h3>Click on project to view details</h3>
+
+{% if projects %}
+    <ul>
+    {% for project in projects %}
+        <li><a href="{% url 'manager:detail' project.id %}">{{ project.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No projects are available.</p>
+{% endif %}
+
+<a href="/admin/manager/developer/add/">Add a developer</a>
+<a href="/admin/manager/project/add/">Add a project</a>
+<a href="/admin/manager/billable/add/">Add a billable item</a>
