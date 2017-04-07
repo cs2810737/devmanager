@@ -4,6 +4,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from manager.models import Project, Billable, Developer
 from manager.serializers import ProjectSerializer, BillableSerializer, DeveloperSerializer
+from rest_framework.renderers import TemplateHTMLRenderer
+from django.contrib.auth.models import User
+from rest_framework import permissions
 
 class ProjectList(APIView):
 	def get(self, request, format=None):
@@ -42,3 +45,41 @@ class ProjectDetail(APIView):
 		project = self.get_object(pk)
 		project.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class BillableList(APIView):
+	def get_object(self, dev_id):
+		try:
+			return Billable.objects.filter(developer_id=dev_id)
+		except Billable.DoesNotExist:
+			raise Http404
+
+	def get(self, request, dev_id, format=None):
+		billables = self.get_object(dev_id)
+		serializer = BillableSerializer(billables, many=True)
+		return Response(serializer.data)
+
+	def post(self, request, format=None):
+		serializer = BillableSerializer(data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def perform_create(self, serializer):
+		serializer.save(developer=self.request.user)
+
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+class DeveloperDetail(APIView):
+	def get_object(self, username):
+		try:
+			return Developer.objects.get(name=username)
+		except Developer.DoesNotExist:
+			raise Http404
+
+	def get(self, request, username):
+		developer = self.get_object(username)
+		serializer = DeveloperSerializer(developer)
+		return Response(serializer.data)

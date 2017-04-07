@@ -15,10 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
 	# url(r'^$', RedirectView.as_view(url='/manage', permanent=False), name='index')
 	url(r'^', include('manager.urls')),
 	# url(r'^manage/', include('manager.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^api-token-auth/', obtain_jwt_token),
+]
+
+urlpatterns += [
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
 ]
