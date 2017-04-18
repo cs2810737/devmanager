@@ -6,7 +6,7 @@ from manager.models import Project, Billable, Developer
 from manager.serializers import ProjectSerializer, BillableSerializer, DeveloperSerializer
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.contrib.auth.models import User
-from rest_framework import permissions
+from rest_framework import permissions, status
 
 class ProjectList(APIView):
 	def get(self, request, format=None):
@@ -20,6 +20,8 @@ class ProjectList(APIView):
 			serializer.save()
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class ProjectDetail(APIView):
 	def get_object(self, pk):
@@ -38,7 +40,7 @@ class ProjectDetail(APIView):
 		serializer = ProjectSerializer(project, data=request.data)
 		if serializer.is_valid():
 			serializer.save()
-			return Response(serializer.data)
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def delete(self, request, pk, format=None):
@@ -48,7 +50,37 @@ class ProjectDetail(APIView):
 
 
 
-class BillableList(APIView):
+class Billables(APIView):
+	def get_object(self, id):
+		try:
+			return Billable.objects.get(id=id)
+		except Billable.DoesNotExist:
+			raise Http404
+
+	def get(self, request, format=None):
+		projects = Billable.objects.all()
+		serializer = BillableSerializer(projects, many=True)
+		return Response(serializer.data)
+
+	def put(self, request, id, format=None):
+		billable = self.get_object(id)
+		serializer = BillableSerializer(billable, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def post(self, request, format=None):
+		serializer = BillableSerializer(data=request.data)
+		if serializer.is_valid():
+			# print request.data
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class DevBillableList(APIView):
 	def get_object(self, dev_id):
 		try:
 			return Billable.objects.filter(developer_id=dev_id)
@@ -71,6 +103,22 @@ class BillableList(APIView):
 		serializer.save(developer=self.request.user)
 
 	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+
+class SingleBillable(APIView):
+	def get_object(self, id):
+		try:
+			return Billable.objects.get(id=id)
+		except Billable.DoesNotExist:
+			raise Http404
+
+	def get(self, request, id):
+		billable = self.get_object(id)
+		serializer = DeveloperSerializer(billable)
+		return Response(serializer.data)
+
+
 
 class DeveloperDetail(APIView):
 	def get_object(self, username):
