@@ -9,6 +9,12 @@ from django.contrib.auth.models import User
 from rest_framework import permissions, status
 
 class ProjectList(APIView):
+	def get_object(self, username):
+		try:
+			return Project.objects.filter(usernames_in=username)
+		except Project.DoesNotExist:
+			raise Http404
+
 	def get(self, request, format=None):
 		projects = Project.objects.all()
 		serializer = ProjectSerializer(projects, many=True)
@@ -78,7 +84,10 @@ class Billables(APIView):
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+	def delete(self, request, id, format=None):
+		billable = self.get_object(id)
+		billable.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
 
 class DevBillableList(APIView):
 	def get_object(self, dev_id):

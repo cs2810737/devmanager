@@ -11,6 +11,7 @@ urlpatterns = [
 
 	url(r'^projects/$', views.ProjectList.as_view()),
     url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectDetail.as_view()),
+    url(r'^projects/(?P<username>[a-z0-9]+)/$', views.ProjectDetail.as_view()),
 
     # url(r'^developers/$', views.developer_list),
     url(r'^developers/(?P<username>[a-z0-9]+)', views.DeveloperDetail.as_view()),
