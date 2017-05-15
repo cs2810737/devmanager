@@ -16,6 +16,9 @@ urlpatterns = [
     # url(r'^developers/$', views.developer_list),
     url(r'^developers/(?P<username>[a-z0-9]+)', views.DeveloperDetail.as_view()),
 
+    url(r'^clients/(?P<id>[0-9]+)', views.Clients.as_view()),
+    url(r'^clients/$', views.Clients.as_view()),
+
     url(r'^billables/(?P<id>[0-9]+)', views.Billables.as_view()),
     url(r'^billables/$', views.Billables.as_view()),
     url(r'^devbillables/(?P<dev_id>[0-9]+)/$', views.DevBillableList.as_view()),

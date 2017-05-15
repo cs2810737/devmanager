@@ -40,9 +40,6 @@ class Billable(models.Model):
 		ordering = ('name',)
 
 class DevMembership(models.Model):
+	start_date = models.DateField(default=datetime.date.today)
 	developer = models.ForeignKey(Developer)
 	project = models.ForeignKey(Project)
-
-# class ProjectOwnership(models.Model):
-# 	project = models.ForeignKey(Project)
-# 	client = models.ForeignKey(Client)

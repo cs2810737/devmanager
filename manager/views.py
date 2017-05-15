@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from manager.models import Project, Billable, Developer
-from manager.serializers import ProjectSerializer, BillableSerializer, DeveloperSerializer
+from manager.models import Client, Project, Billable, Developer
+from manager.serializers import ClientSerializer, ProjectSerializer, BillableSerializer, DeveloperSerializer
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.contrib.auth.models import User
 from rest_framework import permissions, status
@@ -79,7 +79,7 @@ class Billables(APIView):
 	def post(self, request, format=None):
 		serializer = BillableSerializer(data=request.data)
 		if serializer.is_valid():
-			# print request.data
+			print request.data
 			serializer.save()
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -87,6 +87,39 @@ class Billables(APIView):
 	def delete(self, request, id, format=None):
 		billable = self.get_object(id)
 		billable.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
+
+class Clients(APIView):
+	def get_object(self, id):
+		try:
+			return Client.objects.get(id=id)
+		except Client.DoesNotExist:
+			raise Http404
+
+	def get(self, request, format=None):
+		clients = Client.objects.all()
+		serializer = ClientSerializer(clients, many=True)
+		return Response(serializer.data)
+
+	def put(self, request, id, format=None):
+		client = self.get_object(id)
+		serializer = ClientSerializer(client, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def post(self, request, format=None):
+		serializer = ClientSerializer(data=request.data)
+		if serializer.is_valid():
+			print request.data
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def delete(self, request, id, format=None):
+		client = self.get_object(id)
+		client.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
 class DevBillableList(APIView):

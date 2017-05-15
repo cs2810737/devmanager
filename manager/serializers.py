@@ -13,7 +13,7 @@ class DeveloperSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Developer
-		fields = ('name', 'monthly_wage', 'billables')
+		fields = ('id', 'name', 'monthly_wage', 'billables')
 
 class ProjectSerializer(serializers.ModelSerializer):
 	developers = DeveloperSerializer(many=True)
@@ -21,11 +21,11 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Project
-		fields = ('name', 'start_date', 'client', 'developers', 'billables', 'description')
+		fields = ('id', 'name', 'start_date', 'client', 'developers', 'billables', 'description')
 
 class ClientSerializer(serializers.ModelSerializer):
-	projects = ProjectSerializer(many=True)
+	projects = ProjectSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Client
-		fields = ('name', 'projects')
+		fields = ('id', 'name', 'projects')
