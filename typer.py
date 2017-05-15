@@ -12,3 +12,5 @@ proj3 = Project.objects.get(id=3)
 
 dm1 = DevMembership(developer=dev2, project=1)
 dm2 = DevMembership(developer=dev1, project=1)
+dm3 = DevMembership(developer=dev3, project=3)
+dm4 = DevMembership(developer=dev2, project=3)
