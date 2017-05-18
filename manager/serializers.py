@@ -21,7 +21,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Project
-		fields = ('id', 'name', 'start_date', 'client', 'developers', 'billables', 'description')
+		fields = ('id', 'name', 'start_date', 'lead', 'client', 'developers', 'billables', 'description')
 
 class ClientSerializer(serializers.ModelSerializer):
 	projects = ProjectSerializer(many=True, read_only=True)

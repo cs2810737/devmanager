@@ -17,9 +17,16 @@ class Developer(models.Model):
 	class Meta:
 		ordering = ('name',)
 
+class Lead(models.Model):
+	developer = models.OneToOneField(Developer, on_delete=models.CASCADE, primary_key=True)
+
+	class Meta:
+		ordering = ('developer',)
+
 class Project(models.Model):
 	name = models.CharField(max_length = 200)
 	start_date = models.DateField(default=datetime.date.today)
+	lead = models.ForeignKey(Lead, related_name='projects')
 	client = models.ForeignKey(Client, related_name='projects')
 	developers = models.ManyToManyField(Developer, through='DevMembership')
 	description = models.CharField(max_length = 1000)
@@ -41,5 +48,6 @@ class Billable(models.Model):
 
 class DevMembership(models.Model):
 	start_date = models.DateField(default=datetime.date.today)
-	developer = models.ForeignKey(Developer)
-	project = models.ForeignKey(Project)
+	developer = models.ForeignKey(Developer, on_delete=models.CASCADE)
+	project = models.ForeignKey(Project, on_delete=models.CASCADE)
+	role = models.CharField(max_length=64)
