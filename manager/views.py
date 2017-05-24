@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from manager.models import Client, Project, Billable, Developer
-from manager.serializers import ClientSerializer, ProjectSerializer, BillableSerializer, DeveloperSerializer
+from manager.models import Client, Project, Billable, Developer, Lead
+from manager.serializers import ClientSerializer, ProjectSerializer, BillableSerializer, DeveloperSerializer, LeadSerializer, UserSerializer
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.contrib.auth.models import User
 from rest_framework import permissions, status
@@ -26,6 +26,8 @@ class ProjectList(APIView):
 			serializer.save()
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 
@@ -53,6 +55,8 @@ class ProjectDetail(APIView):
 		project = self.get_object(pk)
 		project.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
+
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 
@@ -89,6 +93,8 @@ class Billables(APIView):
 		billable.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
 class Clients(APIView):
 	def get_object(self, id):
 		try:
@@ -122,6 +128,8 @@ class Clients(APIView):
 		client.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
 class DevBillableList(APIView):
 	def get_object(self, dev_id):
 		try:
@@ -144,7 +152,7 @@ class DevBillableList(APIView):
 	def perform_create(self, serializer):
 		serializer.save(developer=self.request.user)
 
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 
@@ -160,12 +168,14 @@ class SingleBillable(APIView):
 		serializer = DeveloperSerializer(billable)
 		return Response(serializer.data)
 
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
 
 
 class DeveloperDetail(APIView):
 	def get_object(self, username):
 		try:
-			return Developer.objects.get(name=username)
+			return Developer.objects.get(username=username)
 		except Developer.DoesNotExist:
 			raise Http404
 
@@ -173,3 +183,29 @@ class DeveloperDetail(APIView):
 		developer = self.get_object(username)
 		serializer = DeveloperSerializer(developer)
 		return Response(serializer.data)
+
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+class Leads(APIView):
+
+	def get_object(self, id):
+		try:
+			return Lead.objects.get(user_id=uid)
+		except Lead.DoesNotExist:
+			raise Http404
+
+	def get(self, request):
+		leads = Lead.objects.all()
+		serializer = LeadSerializer(leads, many=True)
+		return Response(serializer.data)
+
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+class Users(APIView):
+
+	def get(self, request, username):
+		user = User.objects.get(username=username)
+		serializer = UserSerializer(user)
+		return Response(serializer.data)
+
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)

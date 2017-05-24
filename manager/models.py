@@ -1,27 +1,32 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 import datetime
 
 # Create your models here.
 class Client(models.Model):
 	name = models.CharField(max_length = 50)
+	phone_number = models.IntegerField();
+	email = models.CharField(max_length = 50);
+	address = models.CharField(max_length = 100);
 
 	class Meta:
 		ordering = ('name',)
 
 class Developer(models.Model):
-	name = models.CharField(max_length = 50)
+	user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 	monthly_wage = models.IntegerField(default = 25000)
+	# username = models.OneToOneField(User, related_name='developer')
 
 	class Meta:
-		ordering = ('name',)
+		ordering = ('monthly_wage',)
 
 class Lead(models.Model):
-	developer = models.OneToOneField(Developer, on_delete=models.CASCADE, primary_key=True)
+	user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
 	class Meta:
-		ordering = ('developer',)
+		ordering = ('user',)
 
 class Project(models.Model):
 	name = models.CharField(max_length = 200)

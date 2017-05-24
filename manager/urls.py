@@ -1,7 +1,8 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.views.generic.base import RedirectView
 from rest_framework.urlpatterns import format_suffix_patterns
 from django.views.generic.base import RedirectView
+from rest_framework_jwt.views import obtain_jwt_token
 
 from . import views
 
@@ -15,6 +16,9 @@ urlpatterns = [
 
     # url(r'^developers/$', views.developer_list),
     url(r'^developers/(?P<username>[a-z0-9]+)', views.DeveloperDetail.as_view()),
+    url(r'^leads/$', views.Leads.as_view()),
+
+    url(r'^users/(?P<username>[a-z0-9]+)$', views.Users.as_view()),
 
     url(r'^clients/(?P<id>[0-9]+)', views.Clients.as_view()),
     url(r'^clients/$', views.Clients.as_view()),
@@ -23,7 +27,12 @@ urlpatterns = [
     url(r'^billables/$', views.Billables.as_view()),
     url(r'^devbillables/(?P<dev_id>[0-9]+)/$', views.DevBillableList.as_view()),
 
-    url(r'^accounts/profile/$', RedirectView.as_view(url='<url_to_home_view>', permanent=False), name='index')
+    url(r'^accounts/profile/$', RedirectView.as_view(url='<url_to_home_view>', permanent=False), name='index'),
+    url(r'^api-token-auth/', obtain_jwt_token),
+]
+
+urlpatterns += [
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
