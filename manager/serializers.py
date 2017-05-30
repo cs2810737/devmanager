@@ -46,7 +46,7 @@ class LeadSerializer(serializers.ModelSerializer):
 		fields = ('user_id', )
 
 class UserSerializer(serializers.ModelSerializer):
-	# user = 
+	# lead = LeadSerializer()
 
 	class Meta:
 		model = User
