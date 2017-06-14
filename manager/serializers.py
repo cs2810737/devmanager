@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from manager.models import Client, Project, Developer, Billable, Lead
+from manager.models import Client, Project, Developer, Billable, DevMembership
 from django.contrib.auth.models import User
 
 class BillableSerializer(serializers.ModelSerializer):
@@ -8,46 +8,38 @@ class BillableSerializer(serializers.ModelSerializer):
 		model = Billable
 		fields = ('id', 'name', 'project', 'cost', 'developer', 'recurring', 'reg_date', 'description' )
 
+
+class UserSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = User
+		fields = ('id', 'username', )
+
 class DeveloperSerializer(serializers.ModelSerializer):
-	# billables = BillableSerializer(many=True)
+	user = UserSerializer()
 
 	class Meta:
 		model = Developer
-		fields = ('user_id', 'monthly_wage', )
-
-# class UserSerializer(serializers.ModelSerializer):
-# 	developer = DeveloperSerializer()
-
-# 	class Meta:
-# 		model = User
-# 		fields = ('id', 'username', 'developer')
+		fields = ( 'user', 'monthly_wage', 'lead')
 
 class ProjectSerializer(serializers.ModelSerializer):
-	developers = DeveloperSerializer(many=True)
-	# developers = UserSerializer(many=True)
-	billables = BillableSerializer(many=True)
+	developers = DeveloperSerializer(many=True, read_only=True)
+	billables = BillableSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Project
-		fields = ('id', 'name', 'start_date', 'lead', 'client', 'developers', 'billables', 'description', 'lead')
+		fields = ('id', 'name', 'start_date', 'lead', 'developers', 'billables', 'description', 'lead')
 
 class ClientSerializer(serializers.ModelSerializer):
-	# projects = ProjectSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Client
 		fields = ('id', 'name', 'phone_number', 'email', 'address')
 
-class LeadSerializer(serializers.ModelSerializer):
-	# user = 
+class DevMembershipSerializer(serializers.ModelSerializer):
 
 	class Meta:
-		model = Lead
-		fields = ('user_id', )
+		model = DevMembership
+		fields = ('id', 'developer', 'start_date', 'role', 'project' )
 
-class UserSerializer(serializers.ModelSerializer):
-	# lead = LeadSerializer()
 
-	class Meta:
-		model = User
-		fields = ('id', 'username')

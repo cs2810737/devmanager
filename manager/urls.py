@@ -15,10 +15,14 @@ urlpatterns = [
     url(r'^projects/(?P<username>[a-z0-9]+)/$', views.ProjectDetail.as_view()),
 
     # url(r'^developers/$', views.developer_list),
-    url(r'^developers/(?P<username>[a-z0-9]+)', views.DeveloperDetail.as_view()),
-    url(r'^leads/$', views.Leads.as_view()),
+    url(r'^developers/(?P<user_id>[a-z0-9]+)', views.DeveloperDetail.as_view()),
+    # url(r'^leads/$', views.Leads.as_view()),
 
-    url(r'^users/(?P<username>[a-z0-9]+)$', views.Users.as_view()),
+    url(r'^devmembership/$', views.DevMembership.as_view()),
+    url(r'^devmembership/(?P<project_id>[0-9])+/$', views.DevMembership.as_view()),
+
+    url(r'^users/$', views.Users.as_view()),
+    url(r'^users/(?P<id>[a-z0-9]+)$', views.SingleUser.as_view()),
 
     url(r'^clients/(?P<id>[0-9]+)', views.Clients.as_view()),
     url(r'^clients/$', views.Clients.as_view()),

@@ -2,11 +2,13 @@ from django.shortcuts import render
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from manager.models import Client, Project, Billable, Developer, Lead
-from manager.serializers import ClientSerializer, ProjectSerializer, BillableSerializer, DeveloperSerializer, LeadSerializer, UserSerializer
+from manager.models import Client, Project, Billable, Developer
+from manager.models import DevMembership as DevMembershipModel
+from manager.serializers import ClientSerializer, ProjectSerializer, BillableSerializer, DeveloperSerializer, UserSerializer, DevMembershipSerializer
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.contrib.auth.models import User
 from rest_framework import permissions, status
+from django.core.exceptions import ObjectDoesNotExist
 
 class ProjectList(APIView):
 	def get_object(self, username):
@@ -173,39 +175,70 @@ class SingleBillable(APIView):
 
 
 class DeveloperDetail(APIView):
-	def get_object(self, username):
+	def get_object(self, user_id):
 		try:
-			return Developer.objects.get(username=username)
+			return Developer.objects.get(user_id=user_id)
 		except Developer.DoesNotExist:
 			raise Http404
 
-	def get(self, request, username):
-		developer = self.get_object(username)
+	def get(self, request, user_id):
+		developer = self.get_object(user_id)
 		serializer = DeveloperSerializer(developer)
 		return Response(serializer.data)
 
 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-class Leads(APIView):
+class DevMembership(APIView):
 
 	def get_object(self, id):
 		try:
-			return Lead.objects.get(user_id=uid)
-		except Lead.DoesNotExist:
+			return DevMembershipModel.objects.get(id=id)
+		except ObjectDoesNotExist:
 			raise Http404
 
-	def get(self, request):
-		leads = Lead.objects.all()
-		serializer = LeadSerializer(leads, many=True)
+	def get(self, request, project_id):
+		membership = DevMembershipModel.objects.filter(project_id=project_id)
+		print membership
+		serializer = DevMembershipSerializer(membership, many=True)
+		return Response(serializer.data)
+
+	def put(self, request, id):
+		dev_membership = self.get_object(id)
+		serializer = DevMembershipSerializer(dev_membership, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def post(self, request):
+		serializer = DevMembershipSerializer(data=request.data)
+		if serializer.is_valid():
+			print request.data
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def delete(self, request, id):
+		dev_membership = self.get_object(id)
+		dev_membership.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
+
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+class SingleUser(APIView):
+
+	def get(self, request, id):
+		user = User.objects.get(id=id)
+		serializer = UserSerializer(user)
 		return Response(serializer.data)
 
 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 class Users(APIView):
 
-	def get(self, request, username):
-		user = User.objects.get(username=username)
-		serializer = UserSerializer(user)
+	def get(self, request):
+		users = User.objects.all()
+		serializer = UserSerializer(users, many=True)
 		return Response(serializer.data)
 
 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
