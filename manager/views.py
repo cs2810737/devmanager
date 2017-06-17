@@ -218,8 +218,11 @@ class DevMembership(APIView):
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-	def delete(self, request, id):
-		dev_membership = self.get_object(id)
+	def delete(self, request, developer_id):
+		try:
+			dev_membership = DevMembershipModel.objects.get(developer_id=developer_id)
+		except ObjectDoesNotExist:
+			raise Http404
 		dev_membership.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 

@@ -20,6 +20,7 @@ urlpatterns = [
 
     url(r'^devmembership/$', views.DevMembership.as_view()),
     url(r'^devmembership/(?P<project_id>[0-9])+/$', views.DevMembership.as_view()),
+    url(r'^devmembershipdevid/(?P<developer_id>[0-9])+/$', views.DevMembership.as_view()),
 
     url(r'^users/$', views.Users.as_view()),
     url(r'^users/(?P<id>[a-z0-9]+)$', views.SingleUser.as_view()),
