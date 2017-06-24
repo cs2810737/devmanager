@@ -17,12 +17,13 @@ class Client(models.Model):
 class Developer(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 	monthly_wage = models.IntegerField(default = 25000)
-	lead = models.BooleanField(default=False)
-	# username = models.OneToOneField(User, related_name='developer')
+	# lead = models.BooleanField(default=False)
 
 	class Meta:
 		ordering = ('monthly_wage',)
 
+class Lead(models.Model):
+	user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
 	class Meta:
 		ordering = ('user',)
@@ -52,6 +53,7 @@ class Billable(models.Model):
 
 class Payment(models.Model):
 	billable = models.ForeignKey(Billable, related_name='payments')
+	project = models.ForeignKey(Project, related_name='payments')
 	date_made = models.DateField(default=datetime.date.today)
 	amount = models.IntegerField(default=500)
 	comment = models.CharField(max_length = 100)

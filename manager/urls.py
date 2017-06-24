@@ -16,7 +16,7 @@ urlpatterns = [
 
     # url(r'^developers/$', views.developer_list),
     url(r'^developers/(?P<user_id>[a-z0-9]+)', views.DeveloperDetail.as_view()),
-    # url(r'^leads/$', views.Leads.as_view()),
+    url(r'^leads/$', views.Leads.as_view()),
 
     url(r'^devmembership/$', views.DevMembership.as_view()),
     url(r'^devmembership/(?P<project_id>[0-9])+/$', views.DevMembership.as_view()),
@@ -31,6 +31,9 @@ urlpatterns = [
     url(r'^billables/(?P<id>[0-9]+)', views.Billables.as_view()),
     url(r'^billables/$', views.Billables.as_view()),
     url(r'^devbillables/(?P<dev_id>[0-9]+)/$', views.DevBillableList.as_view()),
+
+    url(r'^payments/(?P<id>[0-9]+)/$', views.Payment.as_view()),
+    url(r'^projpayments/(?P<project_id>[0-9]+)/$', views.Payments.as_view()),
 
     url(r'^accounts/profile/$', RedirectView.as_view(url='<url_to_home_view>', permanent=False), name='index'),
     url(r'^api-token-auth/', obtain_jwt_token),

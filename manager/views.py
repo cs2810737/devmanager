@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from manager.models import Client, Project, Billable, Developer
+from manager.models import Client, Project, Billable, Developer, Lead
 from manager.models import DevMembership as DevMembershipModel
-from manager.serializers import ClientSerializer, ProjectSerializer, BillableSerializer, DeveloperSerializer, UserSerializer, DevMembershipSerializer
+from manager.serializers import ClientSerializer, ProjectSerializer, BillableSerializer, DeveloperSerializer, UserSerializer, DevMembershipSerializer, LeadSerializer
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.contrib.auth.models import User
 from rest_framework import permissions, status
@@ -30,8 +30,6 @@ class ProjectList(APIView):
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-
 
 class ProjectDetail(APIView):
 	def get_object(self, pk):
@@ -132,6 +130,7 @@ class Clients(APIView):
 
 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+
 class DevBillableList(APIView):
 	def get_object(self, dev_id):
 		try:
@@ -172,7 +171,48 @@ class SingleBillable(APIView):
 
 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+class Payment(APIView):
+	def get_object(self, id):
+		try:
+			return Payment.objects.get(id=id)
+		except Payment.DoesNotExist:
+			raise Http404
 
+	def get(self, request, format=None):
+		payments = Payment.objects.all()
+		serializer = PaymentSerializer(payments, many=True)
+		return Response(serializer.data)
+
+	def put(self, request, id, format=None):
+		payment = self.get_object(id)
+		serializer = PaymentSerializer(payment, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def post(self, request, format=None):
+		serializer = PaymentSerializer(data=request.data)
+		if serializer.is_valid():
+			print request.data
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def delete(self, request, id, format=None):
+		payment = self.get_object(id)
+		payment.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
+
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+class Payments(APIView):
+	def get(self, request, project_id, format=None):
+		payments = Payments.objects.filter(project_id=project_id)
+		serializer = PaymentSerializer(payments, many=True)
+		return Response(serializer.data)
+
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 class DeveloperDetail(APIView):
 	def get_object(self, user_id):
@@ -242,6 +282,15 @@ class Users(APIView):
 	def get(self, request):
 		users = User.objects.all()
 		serializer = UserSerializer(users, many=True)
+		return Response(serializer.data)
+
+	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+class Leads(APIView):
+
+	def get(self, request):
+		leads = Lead.objects.all()
+		serializer = LeadSerializer(leads, many=True)
 		return Response(serializer.data)
 
 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)

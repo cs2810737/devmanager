@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from manager.models import Client, Project, Developer, Billable, DevMembership
+from manager.models import Client, Project, Developer, Billable, DevMembership, Lead
 from django.contrib.auth.models import User
 
 class BillableSerializer(serializers.ModelSerializer):
@@ -15,12 +15,18 @@ class UserSerializer(serializers.ModelSerializer):
 		model = User
 		fields = ('id', 'username', )
 
+class LeadSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Lead
+		fields = ('user',)
+
 class DeveloperSerializer(serializers.ModelSerializer):
 	user = UserSerializer()
 
 	class Meta:
 		model = Developer
-		fields = ( 'user', 'monthly_wage', 'lead')
+		fields = ( 'user', 'monthly_wage', )
 
 class ProjectSerializer(serializers.ModelSerializer):
 	developers = DeveloperSerializer(many=True, read_only=True)
