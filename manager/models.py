@@ -25,13 +25,13 @@ class Developer(models.Model):
 class Lead(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
-	class Meta:
-		ordering = ('user',)
+	# class Meta:
+		# ordering = ('user',)
 
 class Project(models.Model):
 	name = models.CharField(max_length = 200)
 	start_date = models.DateField(default=datetime.date.today)
-	lead = models.ForeignKey(Developer, related_name='projects')
+	lead = models.ForeignKey(User, related_name='projects')
 	client = models.ForeignKey(Client, related_name='projects')
 	developers = models.ManyToManyField(Developer, through='DevMembership')
 	description = models.CharField(max_length = 1000)

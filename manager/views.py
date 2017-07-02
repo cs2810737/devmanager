@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from manager.models import Client, Project, Billable, Developer, Lead
 from manager.models import DevMembership as DevMembershipModel
-from manager.serializers import ClientSerializer, ProjectSerializer, BillableSerializer, DeveloperSerializer, UserSerializer, DevMembershipSerializer, LeadSerializer
+from manager.serializers import ClientSerializer, ProjectSerializer, BillableSerializer, DeveloperSerializer, UserSerializer, DevMembershipSerializer, LeadSerializer, PaymentSerializer
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.contrib.auth.models import User
 from rest_framework import permissions, status
@@ -23,10 +23,14 @@ class ProjectList(APIView):
 		return Response(serializer.data)
 
 	def post(self, request, format=None):
+		print request.data
 		serializer = ProjectSerializer(data=request.data)
 		if serializer.is_valid():
+			print 'is valid'
 			serializer.save()
+			print 'is valid 2'
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		print 'isn\'t valid'
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -272,6 +276,11 @@ class SingleUser(APIView):
 
 	def get(self, request, id):
 		user = User.objects.get(id=id)
+		serializer = UserSerializer(user)
+		return Response(serializer.data)
+
+	def get(self, request, username):
+		user = User.objects.get(username=username)
 		serializer = UserSerializer(user)
 		return Response(serializer.data)
 

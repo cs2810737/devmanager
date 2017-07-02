@@ -23,7 +23,8 @@ urlpatterns = [
     url(r'^devmembershipdevid/(?P<developer_id>[0-9])+/$', views.DevMembership.as_view()),
 
     url(r'^users/$', views.Users.as_view()),
-    url(r'^users/(?P<id>[a-z0-9]+)$', views.SingleUser.as_view()),
+    url(r'^users/(?P<id>[0-9]+)$', views.SingleUser.as_view()),
+    url(r'^users/(?P<username>[a-z]+)$', views.SingleUser.as_view()),
 
     url(r'^clients/(?P<id>[0-9]+)', views.Clients.as_view()),
     url(r'^clients/$', views.Clients.as_view()),
@@ -32,6 +33,7 @@ urlpatterns = [
     url(r'^billables/$', views.Billables.as_view()),
     url(r'^devbillables/(?P<dev_id>[0-9]+)/$', views.DevBillableList.as_view()),
 
+    url(r'^payments/$', views.Payment.as_view()),
     url(r'^payments/(?P<id>[0-9]+)/$', views.Payment.as_view()),
     url(r'^projpayments/(?P<project_id>[0-9]+)/$', views.Payments.as_view()),
 
